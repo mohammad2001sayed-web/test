@@ -22,6 +22,4 @@ export const router = createBrowserRouter([
     {path: "*", element: <NotFound />},
 
   ] },
-],{
-  basename:'/start-react/'
-});     
+]);     

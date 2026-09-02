@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage":  "https://mohammad2001sayed-web.github.io/start-react/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
