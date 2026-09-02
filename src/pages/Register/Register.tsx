@@ -1,0 +1,255 @@
+import {
+  Button,
+  Form,
+  Input,
+  Label,
+  TextField,
+  Select,
+  ListBox,
+  Spinner,
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check } from "iconsax-react";
+import { Controller, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+
+import { ZodRegister, type RegisterDataForm } from "./rigester.validation";
+import { sendUserRigister } from "./register.api";
+import { useNavigate } from "react-router";
+
+export default function Register() {
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<RegisterDataForm>({
+    defaultValues: {
+      name: "",
+      username: "",
+      email: "",
+      dateOfBirth: "",
+      gender: "" as "male" | "female",
+      password: "",
+      rePassword: "",
+    },
+    mode: "all",
+    resolver: zodResolver(ZodRegister),
+  });
+
+  const navigator = useNavigate();
+
+  async function SayHello(userData: RegisterDataForm) {
+    console.log("Form Data:", userData);
+    toast.promise(sendUserRigister(userData), {
+      loading: "wait wait...",
+      success: function (x) {
+        reset();
+        navigator("/Login");
+        return <h1 className="text-emerald-500 capitalize">{x}</h1>;
+      },
+      error: function () {
+        return <h1 className="text-red-600 capitalize">erorr data</h1>;
+      },
+    });
+  }
+
+  return (
+    <div className=" dark:from-emerald-900 dark:to-slate-400       flex justify-center py-30 items-center min-h-screen bg-linear-to-r from-blue-500 to-purple-600">
+      <Form
+        onSubmit={handleSubmit(SayHello)}
+        className="dark:bg-black dark:text-blue-300  flex lg:min-w-2xl bg-white shadow-2xl p-10 rounded-xl flex-col gap-4"
+      >
+        <h1 className="text-center text-2xl font-bold">Register</h1>
+
+        {/* name Input */}
+        <TextField isRequired type="text" isInvalid={!!errors.name}>
+          <Label>name</Label>
+          <Input
+            {...register("name")}
+            className={`focus:ring-amber-300`}
+            placeholder="Enter your name"
+          />
+          {/* <Input
+            {...register("name",{ 
+              required: {value: true, message: "Name is required"},
+              pattern: {value: /^[a-zA-Z\s]{3,20}$/, message: "Name is pattern is not valid"}
+            
+            })}
+            className={`focus:ring-amber-300`}
+            placeholder="Enter your name"
+          /> */}
+          {errors.name && (
+            <span className="text-red-500 text-sm mt-1">
+              {errors.name.message}
+            </span>
+          )}
+        </TextField>
+        {/* username Input */}
+        <TextField isRequired type="text" isInvalid={!!errors.username}>
+          <Label>username</Label>
+          <Input
+            {...register("username")}
+            className={`focus:ring-amber-300`}
+            placeholder="Enter your username"
+          />
+        </TextField>
+        {/* email Input */}
+        <TextField isRequired type="email" isInvalid={!!errors.email}>
+          <Label>email</Label>
+          <Input
+            {...register("email")}
+            className={`focus:ring-amber-300`}
+            placeholder="Enter your email"
+          />
+          {errors.email && (
+            <span className="text-red-500 text-sm mt-1">
+              {errors.email.message}
+            </span>
+          )}
+        </TextField>
+        {/* password Input */}
+        <TextField isRequired type="password" isInvalid={!!errors.password}>
+          <Label>password</Label>
+          <Input
+            {...register("password")}
+            className={`focus:ring-amber-300`}
+            placeholder="Enter your password"
+          />
+        </TextField>
+        {/* confirm password Input */}
+        <TextField isRequired type="password" isInvalid={!!errors.rePassword}>
+          <Label>Confirm Password</Label>
+          <Input
+            {...register("rePassword")}
+            className={`focus:ring-amber-300`}
+            placeholder="Confirm your password"
+          />
+          {errors.rePassword && (
+            <span className="text-red-500 text-sm mt-1">
+              {errors.rePassword.message}
+            </span>
+          )}
+        </TextField>
+
+        <Controller
+          name="dateOfBirth"
+          control={control}
+          //   rules={{
+          //     required: {value:true, message: "تاريخ الميلاد مطلوب"},
+          // validate: (value) => {
+          //   if (!value) return true;
+
+          //   const selectedDate = new Date(value);
+          //   const today = new Date();
+          //   const birthYear = selectedDate.getFullYear();
+
+          //   // 1. التأكد من أن السنة منطقية (ليست 0026 مثلاً)
+          //   if (birthYear < 1970) {
+          //     return "يرجى كتابة سنة ميلاد صحيحة";
+          //   }
+
+          //   // 2. التأكد من أن التاريخ ليس في المستقبل
+          //   if (selectedDate > today) {
+          //     return "تاريخ الميلاد لا يمكن أن يكون في المستقبل";
+          //   }
+
+          //   // 3. حساب العمر بدقة
+          //   let age = today.getFullYear() - birthYear;
+          //   const monthDiff = today.getMonth() - selectedDate.getMonth();
+
+          //   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
+          //     age--;
+          //   }
+
+          //   if (age < 21) {
+          //     return "يجب أن يكون عمرك 21 سنة أو أكثر";
+          //   }
+
+          //   return true;
+          // }  }}
+          render={({ field, fieldState }) => (
+            <TextField isRequired isInvalid={!!fieldState.error} type="date">
+              <Label>Date of Birth</Label>
+              <Input
+                {...field}
+                className={
+                  fieldState.error
+                    ? `focus:ring-amber-900`
+                    : `focus:ring-amber-300`
+                }
+                placeholder="Enter your date of birth"
+              />
+              {fieldState.error && (
+                <span className="text-red-500 text-sm mt-1">
+                  {fieldState.error.message}
+                </span>
+              )}
+            </TextField>
+          )}
+        />
+        <Controller
+          name="gender"
+          control={control}
+          //  rules={
+          //   {
+          //     required:{value:true, message: " مطلوب"},
+          //     // pattern:{value:/"male" |"famale"/i, message: " مطلوب"},
+          //   }
+          // }
+          render={({ field, fieldState }) => {
+            {
+              /* Gender Input */
+            }
+            return (
+              <Select
+                placeholder="Select your gender"
+                {...field}
+                isInvalid={!!fieldState.error}
+              >
+                <Label>Gender</Label>
+                <Select.Trigger>
+                  <Select.Value />
+                  <Select.Indicator />
+                </Select.Trigger>
+                <Select.Popover>
+                  <ListBox>
+                    <ListBox.Item id="male" textValue="Male">
+                      Male
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    <ListBox.Item id="female" textValue="Female">
+                      Female
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  </ListBox>
+                </Select.Popover>
+                {fieldState.error && (
+                  <span className="text-red-500 text-sm mt-1">
+                    {fieldState.error.message}
+                  </span>
+                )}
+              </Select>
+            );
+          }}
+        />
+
+        <div className="flex flex-col gap-2">
+          <Button className={`w-full`} type="submit" isPending={isSubmitting}>
+            {isSubmitting ? (
+              <Spinner color="current" size="lg" />
+            ) : (
+              <>
+                <Check size="24" color="#fff" variant="Linear" /> Submit
+              </>
+            )}
+          </Button>
+          <Button className={`w-full`} type="reset" variant="danger-soft">
+            Reset
+          </Button>
+        </div>
+      </Form>
+    </div>
+  );
+}
