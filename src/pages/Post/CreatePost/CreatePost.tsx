@@ -9,11 +9,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function CreatePost({ user }: { user: User }) {
   const { name, photo } = user;
+
   const queryClient = useQueryClient();
   const upfile = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, reset } = useForm({
-    defaultValues: { body: "" },
+    defaultValues: {
+      body: "",
+    },
   });
 
   const [postImage, setPostImage] = useState<File | null>(null);
@@ -21,31 +24,77 @@ export default function CreatePost({ user }: { user: User }) {
 
   const { mutateAsync } = useMutation({
     mutationFn: FnCreatPost,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+
+    onSuccess: async () => {
+      // تحديث البوستات بعد إنشاء بوست جديد
+      await queryClient.refetchQueries({
+        queryKey: ["allPost"],
+        type: "active",
+      });
     },
   });
 
   function CreateUserPost(data: { body: string }) {
+    // منع إرسال بوست فاضي تمامًا
+    if (!data.body.trim() && !postImage) {
+      toast.error("Please write something or choose an image");
+      return;
+    }
+
     const formData = new FormData();
-    if (data.body) formData.append("body", data.body);
-    if (postImage) formData.append("image", postImage);
+
+    if (data.body.trim()) {
+      formData.append("body", data.body.trim());
+    }
+
+    if (postImage) {
+      formData.append("image", postImage);
+    }
 
     toast.promise(mutateAsync(formData), {
       loading: "Creating post...",
-      success: (res: any) => {
+
+      success: (res) => {
+        // تنظيف الفورم
         reset();
+
+        // تنظيف الصورة
         setPostImage(null);
         setUpUserImage("");
+
+        // تنظيف input file
+        if (upfile.current) {
+          upfile.current.value = "";
+        }
+
         return (
           <span className="text-green-700">
-            {res?.data?.message || "Post created successfully!"}
+            {res || "Post created successfully!"}
           </span>
         );
       },
+
       error: (err: any) =>
-        err?.response?.data?.message || "Failed to create post",
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create post",
     });
+  }
+
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // لو فيه Preview قديم امسحه
+    if (upUserImage) {
+      URL.revokeObjectURL(upUserImage);
+    }
+
+    setPostImage(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    setUpUserImage(previewUrl);
   }
 
   return (
@@ -80,7 +129,7 @@ export default function CreatePost({ user }: { user: User }) {
           </div>
 
           {upUserImage && (
-            <div className="mb-3">
+            <div className="mb-3 relative">
               <img
                 className="w-1/4 mx-auto rounded-2xl max-h-48 object-cover"
                 src={upUserImage}
@@ -89,20 +138,17 @@ export default function CreatePost({ user }: { user: User }) {
             </div>
           )}
 
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 text-white"
+          >
             Create Post
           </Button>
         </Form>
 
         <input
           ref={upfile}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              setPostImage(file);
-              setUpUserImage(URL.createObjectURL(file));
-            }
-          }}
+          onChange={handleImageChange}
           type="file"
           accept="image/*"
           hidden

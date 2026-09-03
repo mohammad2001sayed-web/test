@@ -1,16 +1,17 @@
 import axios from 'axios';
 import type { CreatPostResponse } from './CreatPost.interface';
 
+// تحديد الـ Base URL بشكل آمن للتوافق مع أي اسم في .env
+const getBaseUrl = () => import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || "https://route-posts.routemisr.com";
+
 export async function FnCreatPost(formData: FormData): Promise<string> {
   try {
-    // 👈 1. تعديل المسار إلى /posts بحروف صغيرة
     const res = await axios.post<CreatPostResponse>(
-      `${import.meta.env.VITE_BASE_URL}/posts`,
-      formData, // 👈 2. إرسال FormData مباشرة
+      `${getBaseUrl()}/posts`,
+      formData,
       {
         headers: {
           token: localStorage.getItem('tkn') || '',
-          // Axios بيحدد الـ Content-Type لـ multipart/form-data تلقائياً عند استخدام FormData
         },
       }
     );
@@ -23,13 +24,13 @@ export async function FnCreatPost(formData: FormData): Promise<string> {
     throw new Error('Network Error');
   }
 }
+
 export async function FnUpdatePost(
   postId: string,
   body: string,
   file?: File
 ) {
   const formData = new FormData();
-
   formData.append("body", body);
 
   if (file) {
@@ -37,7 +38,7 @@ export async function FnUpdatePost(
   }
 
   return axios.put(
-    `${import.meta.env.VITE_BASE_URL}/posts/${postId}`,
+    `${getBaseUrl()}/posts/${postId}`,
     formData,
     {
       headers: {

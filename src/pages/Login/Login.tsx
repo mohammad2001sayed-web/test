@@ -8,18 +8,17 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check } from "iconsax-react";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { ZodLogin, type LoginDataForm } from "./Login.validation";
-import { sendUserLogin } from "./login.api"
+import { sendUserLogin } from "./login.api";
 import { useContext } from "react";
 import { AuthContext } from "../../context/CounterContext/AuthContext/AuthContext";
 
 export default function Login() {
-
-const {getUserData,setuserData} = useContext(AuthContext)
-
+  // 1. استدعاء setUserToken من الـ Context
+  const { getUserData, setuserData, setUserToken } = useContext(AuthContext);
 
   const {
     handleSubmit,
@@ -42,12 +41,16 @@ const {getUserData,setuserData} = useContext(AuthContext)
     toast.promise(sendUserLogin(userData), {
       loading: "wait wait...",
       success: function (x) {
-        localStorage.setItem('tkn', x.data.token || x.data.data?.token || '');
-        getUserData().then(function(data){
+        const token = x.data.token || x.data.data?.token || "";
+        
+        // 2. حفظ التوكين في الـ localStorage والتحديث في الـ State فوراً
+        localStorage.setItem("tkn", token);
+        setUserToken(token); // السطر ده هو السر اللي هيخلّي النافبار يحدّث فوراً
+
+        getUserData().then(function (data) {
           setuserData(data);
         });
-        console.log(x);
-        
+
         reset();
         navigator("/Post");
         return <h1 className="text-emerald-500 capitalize">{x.data.message}</h1>;
@@ -57,11 +60,12 @@ const {getUserData,setuserData} = useContext(AuthContext)
       },
     });
   }
+
   return (
     <div className="flex justify-center py-30 items-center min-h-screen bg-linear-to-r from-[#09c] to-[#021]">
       <Form
         onSubmit={handleSubmit(SayHello)}
-        className="flex bg-white outline-4  outline-sky-300   dark:bg-sky-900 dark:text-white lg:min-w-2xl shadow-2xl p-10 rounded-xl flex-col gap-4"
+        className="flex bg-white outline-4 outline-sky-300 dark:bg-sky-900 dark:text-white lg:min-w-2xl shadow-2xl p-10 rounded-xl flex-col gap-4"
       >
         <h1 className="text-center text-2xl font-bold">Login</h1>
 
@@ -70,7 +74,7 @@ const {getUserData,setuserData} = useContext(AuthContext)
           <Label>email</Label>
           <Input
             {...register("email")}
-            className={`focus:ring-amber-300`}
+            className="focus:ring-amber-300"
             placeholder="Enter your email"
           />
           {errors.email && (
@@ -79,25 +83,24 @@ const {getUserData,setuserData} = useContext(AuthContext)
             </span>
           )}
         </TextField>
+
         {/* password Input */}
         <TextField isRequired type="password" isInvalid={!!errors.password}>
           <Label>password</Label>
           <Input
             {...register("password")}
-            className={`focus:ring-amber-300`}
+            className="focus:ring-amber-300"
             placeholder="Enter your password"
           />
-                    {errors.password && (
+          {errors.password && (
             <span className="text-red-500 text-sm mt-1">
               {errors.password.message}
             </span>
           )}
-
         </TextField>
 
-
         <div className="flex flex-col gap-2">
-          <Button className={`w-full`} type="submit" isPending={isSubmitting}>
+          <Button className="w-full" type="submit" isPending={isSubmitting}>
             {isSubmitting ? (
               <Spinner color="current" size="lg" />
             ) : (
@@ -106,7 +109,7 @@ const {getUserData,setuserData} = useContext(AuthContext)
               </>
             )}
           </Button>
-          <Button className={`w-full`} type="reset" variant="danger">
+          <Button className="w-full" type="reset" variant="danger">
             Reset
           </Button>
         </div>

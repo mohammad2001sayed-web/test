@@ -1,25 +1,24 @@
-import  axios  from 'axios';
-import type { AllPostRisponse, Post } from './Post.interface';
+import axios from "axios";
+import type { Post } from "./Post.interface";
 
-export  async function HandleAllPost():Promise<Post[]> {
-    try {
-            const res = await axios.get<AllPostRisponse>(`${import.meta.env.VITE_BASE_URL}/posts`,{
-        headers:{
-          token:  localStorage.getItem('tkn')
-        }
-    })
-    
-  return  res.data.data.posts
+export async function HandleAllPost(): Promise<Post[]> {
+  const token = localStorage.getItem("tkn");
 
-        
-    } catch (error) {
-        if (axios.isAxiosError<{message:string}>(error)) {
+  try {
+    const res = await axios.get(
+      `https://route-posts.routemisr.com/posts?limit=50`,
+      {
+        headers: {
+          token: token || "",
+        },
+      }
+    );
 
-            throw new Error (error.response?.data.message)
-            
-        }
-                    throw new Error ("network errorr")
+    console.log("Full API Response:", res.data);
 
-        
-    }
+    return res.data.data.posts;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
 }

@@ -13,7 +13,9 @@ interface NavbarProps {
 export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
   const [isdropdown, setisdropdown] = useState<boolean>(false);
   const [isopen, setisopen] = useState<boolean>(false);
-  const { userData, setuserData, getUserData } = useContext(AuthContext);
+  
+  // 1. استدعاء userToken و setUserToken من الـ AuthContext
+  const { userData, setuserData, getUserData, userToken, setUserToken } = useContext(AuthContext);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleChangePhoto() {
@@ -25,14 +27,16 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
       const formData = new FormData();
       formData.append("photo", file);
 
+      const baseUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL;
+
       await axios.put(
-        `${import.meta.env.VITE_BASE_URL}/users/upload-photo`,
+        `${baseUrl}/users/upload-photo`,
         formData,
         {
           headers: {
             token: localStorage.getItem("tkn"),
           },
-        },
+        }
       );
 
       const updatedUser = await getUserData();
@@ -50,11 +54,13 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
 
   const router = useNavigate();
 
+  // 2. تحديث دالة الـ Logout لمسح الـ userToken وإعادة التوجيه صح
   function handleLogout() {
     localStorage.removeItem("tkn");
+    setUserToken(null);
     setuserData(null);
-    router("./login");
     setisdropdown(false);
+    router("/login");
   }
 
   return (
@@ -85,7 +91,8 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
               )}
             </div>
 
-            {userData ? (
+            {/* 3. الاعتماد على userToken لمعرفة هل المستخدم مسجل دخول أم لا */}
+            {userToken ? (
               <button
                 onClick={() => setisdropdown(!isdropdown)}
                 type="button"
@@ -93,8 +100,10 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
                 id="user-menu-button"
               >
                 <Avatar className="ring-2 ring-indigo-500/40 shadow-md">
-                  <Avatar.Image alt={userData.name} src={userData.photo} />
-                  <Avatar.Fallback>JD</Avatar.Fallback>
+                  <Avatar.Image alt={userData?.name || "User"} src={userData?.photo} />
+                  <Avatar.Fallback>
+                    {userData?.name ? userData.name.substring(0, 2).toUpperCase() : "U"}
+                  </Avatar.Fallback>
                 </Avatar>
                 <input
                   ref={fileInputRef}
@@ -132,9 +141,9 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
               id="user-dropdown"
             >
               <div className="px-4 py-3 text-sm border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#091527]/50">
-                <span className="block font-semibold">{userData?.name}</span>
+                <span className="block font-semibold">{userData?.name || "User"}</span>
                 <span className="block truncate text-slate-500 dark:text-slate-400 text-xs mt-0.5">
-                  {userData?.email}
+                  {userData?.email || ""}
                 </span>
               </div>
               <ul className="p-2 text-sm font-medium">
@@ -188,7 +197,8 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
             id="navbar-user"
           >
             <ul className="font-medium flex flex-col md:flex-row md:space-x-6 rtl:space-x-reverse mt-4 md:mt-0">
-              {userData &&
+              {/* 4. إظهار الروابط بمجرد وجود userToken */}
+              {userToken &&
                 links.map((link) => (
                   <li key={link.href}>
                     <NavLink
@@ -196,14 +206,11 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
                       className={({ isActive }) =>
                         `relative px-8 py-3 font-bold transition-all duration-300 capitalize flex flex-col items-center justify-center gap-1 ${
                           isActive
-                            ? // تأثير الحفر الـ 3D العميق مع الألوان المتناسقة
-                              "bg-slate-200 dark:bg-[#030712] text-indigo-600 dark:text-indigo-400 rounded-t-2xl " +
+                            ? "bg-slate-200 dark:bg-[#030712] text-indigo-600 dark:text-indigo-400 rounded-t-2xl " +
                               "shadow-[inset_0_4px_8px_rgba(0,0,0,0.25),inset_0_-1px_2px_rgba(255,255,255,0.1)] " +
                               "border-t border-x border-indigo-500/30 dark:border-indigo-500/20 " +
-                              // الانحناء المقعر الأيسر (دمج بدون أي فاصل)
                               "before:content-[''] before:absolute before:-left-4 before:bottom-0 before:w-4 before:h-4 " +
                               "before:rounded-br-2xl before:shadow-[4px_4px_0_0_#e2e8f0] dark:before:shadow-[4px_4px_0_0_#030712] " +
-                              // الانحناء المقعر الأيمن
                               "after:content-[''] after:absolute after:-right-4 after:bottom-0 after:w-4 after:h-4 " +
                               "after:rounded-bl-2xl after:shadow-[-4px_4px_0_0_#e2e8f0] dark:after:shadow-[-4px_4px_0_0_#030712]"
                             : "text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white rounded-t-xl hover:bg-slate-200/50 dark:hover:bg-slate-800/40"
@@ -214,9 +221,8 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
                         {link.name.at(0)?.toUpperCase() + link.name.slice(1)}
                       </span>
 
-                      {/* الكورة المضيئة الصغيرة تحت العنصر النشط */}
                       <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 shadow-[0_0_8px_2px_rgba(99,102,241,0.8)] animate-pulse" />
-                    </NavLink>{" "}
+                    </NavLink>
                   </li>
                 ))}
             </ul>
