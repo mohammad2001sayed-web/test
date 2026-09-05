@@ -236,16 +236,16 @@ export default function Register() {
         />
 
         <div className="flex flex-col gap-2">
-          <Button className={`w-full`} type="submit" isPending={isSubmitting}>
+          <Button className={`w-full text-2xl  bg-emerald-950 text-emerald-400 border border-emerald-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75`} type="submit" isPending={isSubmitting}>
             {isSubmitting ? (
               <Spinner color="current" size="lg" />
             ) : (
               <>
-                <Check size="24" color="#fff" variant="Linear" /> Submit
+                <Check size="24" color="#f0ff" variant="Linear" /> Submit
               </>
             )}
           </Button>
-          <Button className={`w-full`} type="reset" variant="danger-soft">
+          <Button className={`w-full text-red-500 text-2xl `} type="reset" >
             Reset
           </Button>
         </div>

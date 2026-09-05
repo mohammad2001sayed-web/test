@@ -440,8 +440,12 @@ export default function PostCard({
             Top Comment
         ========================= */}
 
-        {topComment && !PostDetails && <Coment comment={topComment} />}
-      </Card>
+{topComment && !PostDetails && (
+  <Coment
+    comment={topComment}
+    postId={post._id}
+  />
+)}      </Card>
     </div>
   );
 }

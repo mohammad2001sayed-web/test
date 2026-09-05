@@ -66,7 +66,7 @@ export default function Navbar({ darkmode, setdarkmode }: NavbarProps) {
   return (
     <>
       {/* خلفية الـ Navbar الأساسية */}
-      <nav className="bg-slate-100 pb-1 dark:bg-[#091527] text-slate-800 dark:text-slate-100 shadow-xl fixed w-full z-20 top-0 inset-s-0 border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+      <nav className="bg-slate-400 pb-1 dark:bg-[#091527] text-slate-800 dark:text-slate-100 shadow-xl fixed w-full z-20 top-0 inset-s-0 border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
         <div className="max-w-7xl flex flex-wrap items-center justify-between mx-auto px-4 pt-2">
           <Link
             to=""

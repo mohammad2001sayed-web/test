@@ -100,16 +100,16 @@ export default function Login() {
         </TextField>
 
         <div className="flex flex-col gap-2">
-          <Button className="w-full" type="submit" isPending={isSubmitting}>
+          <Button className="w-full  bg-emerald-950 text-emerald-400 border border-emerald-400 border-b-4 font-medium overflow-hidden relative px-4 py-2 rounded-md hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75" type="submit" isPending={isSubmitting}>
             {isSubmitting ? (
               <Spinner color="current" size="lg" />
             ) : (
               <>
-                <Check size="24" color="#fff" variant="Linear" /> Submit
+                <Check size="24" color="#ff5f" variant="Linear" /> Submit
               </>
             )}
           </Button>
-          <Button className="w-full" type="reset" variant="danger">
+          <Button className="w-full text-red-700 text-[20px]" type="reset" variant="danger">
             Reset
           </Button>
         </div>
