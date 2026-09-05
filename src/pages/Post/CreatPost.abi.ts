@@ -1,45 +1,78 @@
-import axios from 'axios';
-import type { CreatPostResponse } from './CreatPost.interface';
+import axios from "axios";
+import type { CreatPostResponse } from "./CreatPost.interface";
 
-// تحديد الـ Base URL بشكل آمن للتوافق مع أي اسم في .env
-const getBaseUrl = () => import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || "https://route-posts.routemisr.com";
 
-export async function FnCreatPost(formData: FormData): Promise<string> {
+// ==============================
+// Create Post
+// ==============================
+
+export async function FnCreatPost(
+  formData: FormData
+): Promise<string> {
   try {
     const res = await axios.post<CreatPostResponse>(
-      `${getBaseUrl()}/posts`,
+      `${import.meta.env.VITE_BASE_URL}/posts`,
       formData,
       {
         headers: {
-          token: localStorage.getItem('tkn') || '',
+          token: localStorage.getItem("tkn") || "",
         },
       }
     );
 
     return res.data.message;
+
   } catch (error) {
+
     if (axios.isAxiosError<{ message: string }>(error)) {
-      throw new Error(error.response?.data?.message || 'Failed to create post');
+      throw new Error(
+        error.response?.data?.message ||
+        "Failed to create post"
+      );
     }
-    throw new Error('Network Error');
+
+    throw new Error("Network Error");
   }
 }
 
+
+// ==============================
+// Update Post
+// ==============================
+
 export async function FnUpdatePost(
   postId: string,
-  body: string,
+  body?: string,
   file?: File
 ) {
   const formData = new FormData();
-  formData.append("body", body);
 
+  // ابعت body فقط لو فيه نص
+  if (body?.trim()) {
+    formData.append("body", body.trim());
+  }
+
+  // ابعت image فقط لو فيه صورة جديدة
   if (file) {
     formData.append("image", file);
   }
 
   return axios.put(
-    `${getBaseUrl()}/posts/${postId}`,
+    `${import.meta.env.VITE_BASE_URL}/posts/${postId}`,
     formData,
+    {
+      headers: {
+        token: localStorage.getItem("tkn") || "",
+      },
+    }
+  );
+}
+
+// delete post
+
+export async function FnDeletePost(postId: string) {
+  return axios.delete(
+    `${import.meta.env.VITE_BASE_URL}/posts/${postId}`,
     {
       headers: {
         token: localStorage.getItem("tkn") || "",

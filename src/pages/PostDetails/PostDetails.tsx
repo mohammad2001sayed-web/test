@@ -25,7 +25,7 @@ export default function PostDetails() {
         headers: {
           token: localStorage.getItem("tkn"),
         },
-      }
+      },
     );
   }
 
@@ -39,7 +39,7 @@ export default function PostDetails() {
         headers: {
           token: localStorage.getItem("tkn"),
         },
-      }
+      },
     );
   }
 
@@ -85,9 +85,7 @@ export default function PostDetails() {
   // =========================
   if (postError) {
     return (
-      <h1 className="text-3xl text-red-700">
-        {postErrorMessage.message}
-      </h1>
+      <h1 className="text-3xl text-red-700">{postErrorMessage.message}</h1>
     );
   }
 
@@ -96,9 +94,7 @@ export default function PostDetails() {
   // =========================
   if (commentsError) {
     return (
-      <h1 className="text-3xl text-red-700">
-        {commentsErrorMessage.message}
-      </h1>
+      <h1 className="text-3xl text-red-700">{commentsErrorMessage.message}</h1>
     );
   }
 
@@ -107,44 +103,25 @@ export default function PostDetails() {
   // =========================
   return (
     <div className="my-22 w-9/12 mx-auto">
-
       {/* Post */}
-      {postData && (
-        <PostCard
-          post={postData}
-          PostDetails
-        />
-      )}
+      {postData && <PostCard post={postData} PostDetails />}
 
       {/* Comments */}
       <div className="mt-6">
-
-        <h2 className="text-2xl font-bold mb-5">
-          Comments
-        </h2>
+        <h2 className="text-2xl font-bold mb-5">Comments</h2>
 
         {commentsData && commentsData.length > 0 ? (
           <div className="flex flex-col gap-4">
-
             {commentsData.map((comment) => (
-              <Coment
-                key={comment._id}
-                comment={comment}
-              />
+              <Coment key={comment._id} comment={comment} postId={id!} />
             ))}
-
           </div>
         ) : (
-          <p className="text-gray-500 text-lg">
-            No comments yet.
-          </p>
+          <p className="text-gray-500 text-lg">No comments yet.</p>
         )}
 
-        <CreateComment
-          postId={id!}
-        />
+        <CreateComment postId={id!} />
       </div>
-
     </div>
   );
 }

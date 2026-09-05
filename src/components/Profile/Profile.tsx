@@ -25,10 +25,10 @@ export default function Profile() {
   }
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["UserPosts", userData?._id],
+    queryKey: ["allPost", userData._id],
     queryFn: getUserPosts,
     select: (data) => data.data.data.posts,
-    enabled: !!userData?._id,
+    enabled: !!userData._id,
   });
 
   return (
