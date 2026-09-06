@@ -117,7 +117,7 @@ export default function CreatePost({ user }: { user: User }) {
 
             <Input
               {...register("body")}
-              className="grow"
+              className="md:grow"
               type="text"
               placeholder="Create your post..."
             />
