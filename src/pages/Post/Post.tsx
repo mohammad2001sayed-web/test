@@ -43,22 +43,16 @@ export default function Post() {
   return (
     <div className="dark:bg-slate-900 bg-[#0b957a] min-h-screen">
       <div className="pt-20 lg:w-6/12 mx-auto flex flex-col gap-3 justify-center items-center pb-10">
-        
         {/* Create Post */}
         {userData && <CreatePost user={userData} />}
 
         {/* Posts */}
         {posts.length > 0 ? (
           posts.map((post) => (
-            <PostCard
-              key={post._id || post.id}
-              post={post}
-            />
+            <PostCard key={post._id || post.id} post={post} />
           ))
         ) : (
-          <p className="text-white text-lg">
-            لا توجد منشورات حتى الآن
-          </p>
+          <p className="text-white text-lg">لا توجد منشورات حتى الآن</p>
         )}
       </div>
     </div>
