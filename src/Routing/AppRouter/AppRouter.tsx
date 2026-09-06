@@ -14,7 +14,6 @@ export const router = createBrowserRouter([
   {path: "/", element: <Layout />, children: [
     {index: true, element: <ProtectedRoute><Post /></ProtectedRoute>},
     {path: "post", element: <ProtectedRoute><Post /></ProtectedRoute>},
-    {path: "/", element: <ProtectedRoute><Post /></ProtectedRoute>},
     {path: "Profile", element: <ProtectedRoute><Profile /></ProtectedRoute>},
     {path: "Profile/Edit", element: (<ProtectedRoute><EditProfile /></ProtectedRoute>),},
     {path: "PostDetails/:id", element: <ProtectedRoute><PostDetails /></ProtectedRoute>},
