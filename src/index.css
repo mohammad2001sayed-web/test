@@ -3,7 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 
-.Btn {
+@layer base {
+  .Btn {
   width: 140px;
   height: 40px;
   border: none;
@@ -50,6 +51,7 @@
   transform: scale(0.95);
 }
 
+}
 
 /*  */
 

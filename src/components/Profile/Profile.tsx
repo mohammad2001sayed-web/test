@@ -33,7 +33,7 @@ export default function Profile() {
 
   return (
     <div className="w-full overflow-hidden py-4 bg-slate-900 bg-[linear-gradient(30deg,#1e293b_12%,transparent_12.5%,transparent_87%,#1e293b_87.5%,#1e293b),linear-gradient(150deg,#1e293b_12%,transparent_12.5%,transparent_87%,#1e293b_87.5%,#1e293b),linear-gradient(300deg,#1e293b_25%,transparent_25.5%,transparent_75%,#1e293b_75.5%,#1e293b),linear-gradient(60deg,#1e293b_25%,transparent_25.5%,transparent_75%,#1e293b_75.5%,#1e293b),linear-gradient(180deg,#0f172a_15%,transparent_15.5%,transparent_85%,#0f172a_85.5%,#0f172a),linear-gradient(270deg,#0f172a_15%,transparent_15.5%,transparent_85%,#0f172a_85.5%,#0f172a)] bg-size-[80px_140px] bg-center">
-      <div className="my-24 w-9/12 mx-auto">
+      <div className="my-24 w-10/12 mx-auto">
         {/* Cover */}
         <Card className="overflow-hidden bg-gray-400 dark:bg-olive-500 dark:text-amber-950 text-violet-800">
           <div className="h-64">
@@ -57,11 +57,17 @@ export default function Profile() {
 
               {/* Edit */}
               <Link to="/Profile/Edit">
-                <button type="button" className="Btn ">
+                <button type="button" className="Btn hidden md:flex  ">
                  
                 </button>
               </Link>
             </div>
+                          <Link to="/Profile/Edit">
+                <button type="button" className="Btn flex md:hidden my-4 w-full justify-center ">
+                 
+                </button>
+              </Link>
+
 
             {/* Name */}
             <div className="mt-4">
